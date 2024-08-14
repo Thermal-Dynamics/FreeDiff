@@ -104,9 +104,9 @@ def ddim_inversion_null_fixpt(x0, model, uncond_emb, save_all=False, INV_STEPS=5
         alpha_prod_t = model.scheduler.alphas_cumprod[timestep] if timestep >= 0 else model.scheduler.final_alpha_cumprod
         alpha_prod_t_next = model.scheduler.alphas_cumprod[next_timestep]
         beta_prod_t = 1 - alpha_prod_t
-        next_original_sample = (sample - beta_prod_t ** 0.5 * model_output) / alpha_prod_t ** 0.5
-        next_sample_direction = (1 - alpha_prod_t_next) ** 0.5 * model_output
-        next_sample = alpha_prod_t_next ** 0.5 * next_original_sample + next_sample_direction
+        beta_prod_t_next = 1 - alpha_prod_t_next
+
+        next_sample = ((alpha_prod_t_next/alpha_prod_t)**0.5)*sample + (beta_prod_t_next**0.5 - (alpha_prod_t_next*beta_prod_t/alpha_prod_t)**0.5)*model_output
         return next_sample
 
     latent = x0
